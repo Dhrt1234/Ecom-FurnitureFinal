@@ -5,51 +5,66 @@ import { FaPen } from "react-icons/fa";
 import TableHeader from '../../common/TableHeader';
 import axios from 'axios';
 import { event } from 'jquery';
+import SelectCheckbox from '../../common/SelectCheckbox';
+import ResponsivePagination from 'react-responsive-pagination';
+
+
 export default function View_Category() {
     const linkName = "View Category";
     let [categoryList, setCategoryList] = useState([])
     let [staticPath, setStaticPath] = useState('')
     let apiBaseUrl = import.meta.env.VITE_APIBASEURL
-        const module = "category";
+    const module = "category";
     let [ids, setIds] = useState([])
 
-    let id = 1;
-    const navigate = useNavigate();
-    const updateData = (event) => {
-        event.preventDefault()
-        navigate(`/update-category/${id}`);
+    let [selectAll, setSelectAll] = useState(false)
+    let [categoryName, setCategoryName] = useState('')
+    let [categoryOrder, SetCategoryOrder] = useState('')
+    console.log("categoryName", categoryName)
+    console.log("categoryOrder", categoryOrder)
+    const [currentPage, setCurrentPage] = useState(1);
+    let [totalpages, setTotalpages] = useState(0);
+    let [limit, setLimit] = useState(2);
 
-    };
+   
 
     let getCategories = () => {
-        axios.get(`${apiBaseUrl}category/view`)
+        axios.get(`${apiBaseUrl}category/view`, {
+            params: {
+                categoryName,
+                categoryOrder,
+                currentPage,
+                limit
+            }
+        })
             .then((res) => res.data)
             .then((finalRes) => {
                 console.log(finalRes)
                 setCategoryList(finalRes.data)
                 setStaticPath(finalRes.staticPath)
+                   setTotalpages(finalRes.pages)
             })
 
     }
 
     useEffect(() => {
         getCategories()
-    }, [])
+    }, [categoryName, categoryOrder, currentPage, limit])
 
     let checkedCategory = (event) => {
-        if(event.target.checked && !ids.includes(event.target.value)){
+        if (event.target.checked && !ids.includes(event.target.value)) {
             setIds([...ids, event.target.value])
-            console.log("get",setIds)
+            console.log("get", setIds)
         }
-        else{
+        else {
 
-            setIds(ids.filter((v) =>{
-                return v!=event.target.value
+            setIds(ids.filter((v) => {
+                return v != event.target.value
             }))
         }
     }
 
- 
+
 
     return (
         <div>
@@ -69,8 +84,8 @@ export default function View_Category() {
                 <div className='border-b-2 text-gray-300'></div>
                 <div className='w-full min-h-[620px]'>
                     <div className='max-w-[1220px] mx-auto py-5'>
-                       
-                         <TableHeader module={module} linkName={linkName} ids={ids} setIds={setIds} getData={getCategories} />
+
+                        <TableHeader module={module} linkName={linkName} ids={ids} setIds={setIds} getData={getCategories} setSearchName={setCategoryName} setSearchOrder={SetCategoryOrder} searchField1={categoryName} searchField2={categoryOrder} setLimit={setLimit} />
                         <div className='border border-slate-400 border-t-0 rounded-b-md'>
 
                             <div className='overflow-x-auto'>
@@ -79,8 +94,9 @@ export default function View_Category() {
                                     <thead className='text-gray-900 text-[12px] uppercase bg-gray-50'>
                                         <tr>
                                             <th>
-                                                <input type='checkbox' className='text-blue-600 text-sm rounded-sm w-4 h-4 border-gray-400 ' />
+                                                <SelectCheckbox ids={ids} setIds={setIds} list={categoryList} selectAll={selectAll} setSelectAll={setSelectAll} />
                                             </th>
+                                              <th scope='col' className='px-6 py-3'>SR. No</th>
                                             <th scope='col' className='px-6 py-3'>Name</th>
                                             <th scope='col' className='w-[12%]'>Image</th>
                                             <th scope='col' className='w-[15%]'>Order No</th>
@@ -95,16 +111,22 @@ export default function View_Category() {
                                             categoryList.map((items, index) => {
 
                                                 return (
+                                                  
                                                     <tr className='bg-white hover:bg-gray-50'>
                                                         <th className='w-4 p-4'>
                                                             <input type='checkbox' onChange={checkedCategory} value={items._id} checked={ids.includes(items._id)} className='text-blue-600 text-sm rounded-sm w-4 h-4 border-gray-400 ' />
                                                         </th>
+                                                         <th className=' py-4'>
+                                                           {
+                                                            (currentPage-1)*limit+(index+1)
+                                                           }
+                                                        </th>
                                                         <th scope='row' className='text-[15px] px-6 py-4'>
-                                                            {items.categoryName}
+                                                            {items.categoryName} 
 
                                                         </th>
                                                         <th className='px-6 py-4'>
-                                                            <img src={staticPath + items.categoryImage} className='w-10 h-10 rounded-full' />
+                                                            <img src={staticPath + items.categoryImage} className='mx-5 w-10 h-10 rounded-full' />
                                                         </th>
                                                         <th className='text-[15px] px-6  py-4'>{items.categoryOrder}</th>
 
@@ -122,7 +144,9 @@ export default function View_Category() {
 
                                                         </th>
                                                         <th className='px-2 py-4'>
-                                                            <Link to={'/update-Category/${items._id}'}>
+                                                              <Link to={`/add-category/${items._id}`} >
+                                                               
+                                                           
                                                                 <button className='w-[40px] relative   h-[40px] rounded-[50%] bg-blue-700 hover:bg-blue-800'>
 
                                                                     <FaPen className='text-white absolute left-3 bottom-3' />
@@ -144,6 +168,11 @@ export default function View_Category() {
                         </div>
                     </div>
                 </div>
+                     <ResponsivePagination
+                    current={currentPage}
+                    total={totalpages}
+                    onPageChange={setCurrentPage}
+                />
             </section>
 
 

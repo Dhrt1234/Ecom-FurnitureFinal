@@ -2,6 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import { BrowserRouter, Routes, Route } from 'react-router'
+import 'react-responsive-pagination/themes/classic-light-dark.css';
 import MainLayout from './common/MainLayout'
 import Login from './pages/Login'
 import Home from './pages/Home'
@@ -60,8 +61,8 @@ createRoot(document.getElementById('root')).render(
          
          
         { /*parent category */}
-          <Route path='/add-category' element={<Add_Category />} />
-         <Route path='/update-category/:id' element={<Add_Category />} />
+        
+         <Route path='/add-category/:id?' element={<Add_Category />} />
           <Route path='/view-category' element={<View_Category />} />
          
           <Route path='/add-Sub-category' element={<Add_Sub_Category />} />

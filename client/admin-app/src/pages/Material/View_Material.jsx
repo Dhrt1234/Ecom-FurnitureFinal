@@ -4,6 +4,9 @@ import axios from 'axios'
 import { FaFilter } from "react-icons/fa";
 import { FaPen } from "react-icons/fa";
 import TableHeader from '../../common/TableHeader';
+import SelectCheckbox from '../../common/SelectCheckbox';
+
+import ResponsivePagination from 'react-responsive-pagination';
 
 
 export default function View_Material() {
@@ -15,15 +18,23 @@ export default function View_Material() {
     let [selectAll, setSelectAll] = useState(false)
     // const navigate = useNavigate();
     let [materialName, setMaterialName] = useState('')
-    let [materialOrder, SetMaterialOrder] =useState('')
-console.log("materialName",materialName)
-console.log("materialOrder",materialOrder)
+    let [materialOrder, SetMaterialOrder] = useState('')
+    console.log("materialName", materialName)
+    console.log("materialOrder", materialOrder)
+
+
+      const [currentPage, setCurrentPage] = useState(1);
+        let [totalpages, setTotalpages]= useState(0);
+        let [limit , setLimit] = useState(5);
 
     let getMaterials = () => {
-        axios.get(`${apiBaseUrl}material/view`,{
-            params:{
+        
+        axios.get(`${apiBaseUrl}material/view`, {
+            params: {
                 materialName,
-                materialOrder
+                materialOrder,
+                currentPage,
+                limit
 
             }
         })
@@ -31,51 +42,30 @@ console.log("materialOrder",materialOrder)
             .then((finalRes) => {
                 console.log(finalRes)
                 setMaterialList(finalRes.data)
+                setTotalpages(finalRes.pages)
             })
 
     }
 
     useEffect(() => {
         getMaterials()
-    }, [materialName,materialOrder])
+    }, [materialName, materialOrder, currentPage, limit])
 
-    useEffect(() => {
-        console.log("useeffect", ids)
-    }, [ids])
+   
 
     let getAllCheckedvalue = (event) => {
-        alert("hi")
+
         if (event.target.checked && !ids.includes(event.target.value)) {
             setIds([...ids, event.target.value])
-            console.log("get",setIds)
+            console.log("get ids", setIds)
 
         }
         else {
             setIds(ids.filter((v) => v != event.target.value))
-            console.log("else",setIds)
+            console.log("else ids", setIds)
         }
     }
-    let handleAll = (event) => {
-        if (event.target.checked) {
 
-            let allIds = materialList.map((items) => items._id)
-            setIds(allIds)
-        }
-        else {
-            setIds([])
-        }
-    }
-    useEffect(() => {
-        if (materialList.length > 1) {
-            if (materialList.length == ids.length) {
-                setSelectAll(true)
-            }
-            else {
-                setSelectAll(false)
-            }
-        }
-
-    }, [ids])
 
     return (
         <div>
@@ -94,7 +84,7 @@ console.log("materialOrder",materialOrder)
                 <div className='border-b-2 text-gray-300'></div>
                 <div className='w-full min-h-[620px]'>
                     <div className='max-w-[1220px] mx-auto py-5'>
-                        <TableHeader module={module} linkName={linkName} ids={ids} setIds={setIds} getData={getMaterials} setSearchName={setMaterialName} setSearchOrder={SetMaterialOrder} />
+                        <TableHeader module={module} linkName={linkName} ids={ids} setIds={setIds} getData={getMaterials} setSearchName={setMaterialName} setSearchOrder={SetMaterialOrder} searchField1={materialName} searchField2={materialOrder} setLimit={setLimit} />
                         <div className='border border-slate-400 border-t-0 rounded-b-md'>
 
                             <div className='overflow-x-auto'>
@@ -103,11 +93,10 @@ console.log("materialOrder",materialOrder)
                                     <thead className='text-gray-900 text-[12px] uppercase bg-gray-50'>
                                         <tr>
                                             <th>
-                                                <input type='checkbox' onChange={handleAll}
-                                                    checked={selectAll}
+                                                <SelectCheckbox ids={ids} setIds={setIds} list={materialList} selectAll={selectAll} setSelectAll={setSelectAll} />
 
-                                                    className='text-blue-600 text-sm rounded-sm w-4 h-4 border-gray-400 ' />
                                             </th>
+                                            <th scope='col' className='px-6 py-3'>SR. No</th>
                                             <th scope='col' className='px-6 py-3'>Material Name</th>
                                             <th scope='col' className='w-[12%]'>Order</th>
 
@@ -123,6 +112,11 @@ console.log("materialOrder",materialOrder)
                                                     <tr className='bg-white hover:bg-gray-50'>
                                                         <th className='w-4 p-4'>
                                                             <input type='checkbox' onChange={getAllCheckedvalue} value={items._id} checked={ids.includes(items._id)} className='text-blue-600 text-sm rounded-sm w-4 h-4 border-gray-400 ' />
+                                                        </th>
+                                                        <th className=' py-4'>
+                                                           {
+                                                            (currentPage-1)*limit+(index+1)
+                                                           }
                                                         </th>
                                                         <th scope='row' className=' flex items-center justify-center text-[15px] py-4'>
 
@@ -171,6 +165,11 @@ console.log("materialOrder",materialOrder)
                         </div>
                     </div>
                 </div>
+                <ResponsivePagination
+                    current={currentPage}
+                    total={totalpages}
+                    onPageChange={setCurrentPage}
+                />
             </section>
 
         </div>

@@ -8,6 +8,7 @@ name:{
     maxLength:50
 
 },
+userImage:String,
 designation:{
     type:String,
     required:true

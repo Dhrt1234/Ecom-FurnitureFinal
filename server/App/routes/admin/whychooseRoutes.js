@@ -11,9 +11,10 @@ let storage=multer.diskStorage({
     console.log(storage)
     const upload=multer({storage: storage})
     console.log(upload)
-    const {whychooseInsert, whychooseView, whychooseDelete} =require("../../controllers/admin/whychooseController")
+    const {whychooseInsert, whychooseView, whychooseDelete, changeStatus} =require("../../controllers/admin/whychooseController")
     let whychooseRoutes=express.Router();
     whychooseRoutes.post('/insert',upload.single('userImage'), whychooseInsert)
     whychooseRoutes.get('/view' , whychooseView)
     whychooseRoutes.post('/multi-delete/', whychooseDelete)
+    whychooseRoutes.post('/changeStatus',changeStatus)
     module.exports={whychooseRoutes}

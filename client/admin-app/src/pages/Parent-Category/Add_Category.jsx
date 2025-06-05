@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router'
 import { useEffect } from "react";
 import $ from "jquery";
@@ -14,7 +14,11 @@ export default function Add_Category() {
     const { id } = useParams();
     console.log(id);
     const navigate = useNavigate();
+    let [categoryName, setcategoryName] = useState("")
 
+    let [categoryOrder, setcategoryOrder] = useState("")
+
+    let [categoryImage, setcategoryImage] = useState("")
 
     useEffect(() => {
         $(".dropify").dropify({
@@ -28,7 +32,7 @@ export default function Add_Category() {
                 message: `<div class="dropify-message"><span class="file-icon" /> <p class="text-[25px]">{{ default }}</p></div>`,
             },
         });
-    });
+    }, [categoryImage]);
 
     let apiBaseUrl = import.meta.env.VITE_APIBASEURL
     console.log(apiBaseUrl)
@@ -37,31 +41,69 @@ export default function Add_Category() {
     /* save category */
     let saveCategory = (e) => {
         e.preventDefault()
+
+
         let formValue = new FormData(e.target)  //Form tag
-        axios.post(`${apiBaseUrl}category/insert`, formValue)
-            .then((res) => res.data)
-            .then((finalRes) => {
-            if (finalRes.status) {
-                console.log(finalRes)
-                toast.success(finalRes.msg)
-                e.target.reset()
-                $(".dropify").data('dropify').clearElement();
-                setTimeout(() => {
-                    navigate('/view-category')
-
-                },3000)
-
-            }
-            else {
-
-                toast.error(finalRes.msg)
-            }
 
 
+        if (id) {
+            axios.put(`${apiBaseUrl}category/update/${id}`, formValue)
+                .then((res) => res.data)
+                .then((finalRes) => {
+                    if (finalRes.status) {
+                        toast.success(finalRes.msg)
+                        $(".dropify").data('dropify').clearElement();
+                        e.target.reset()
+                        setTimeout(() => {
+                            navigate("/view-category")
+                        }, 2000)
+                    }
+                    else {
+                        toast.error(finalRes.msg)
+                    }
+                })
 
-        })
-    
-}
+        }
+        else {
+            axios.post(`${apiBaseUrl}category/insert`, formValue)
+                .then((res) => res.data)
+                .then((finalRes) => {
+                    if (finalRes.status) {
+                        console.log(finalRes)
+                        toast.success(finalRes.msg)
+                        e.target.reset()
+                        $(".dropify").data('dropify').clearElement();
+                        setTimeout(() => {
+                            navigate('/view-category')
+
+                        }, 3000)
+
+                    }
+                    else {
+
+                        toast.error(finalRes.msg)
+                    }
+
+
+
+                })
+        }
+    }
+
+
+    useEffect(()=>{
+
+        axios.get(`${apiBaseUrl}category/view/${id}`)
+      .then((res) => res.data)
+      .then((finalRes) => {
+        // console.log(finalRes.data.categoryName)
+        // console.log(finalRes.data.categoryOrder)
+        setcategoryName(finalRes.data.categoryName)
+        setcategoryOrder(finalRes.data.categoryOrder)
+        setcategoryImage(finalRes.staticPath+finalRes.data.categoryImage)
+      })
+  }, [id,categoryImage])
+
 
     return (
         <div>
@@ -93,19 +135,25 @@ export default function Add_Category() {
                                         className="dropify text-[15px]"
                                         data-height="250"
                                         name="categoryImage"
+                                        data-default-file={categoryImage}
+                                        onChange={(e)=> setcategoryImage(e.target.value)}
                                     />
                                 </div>
                                 <div className='w-[62%]'>
 
                                     <div className='mb-5 p-1'>
                                         <label for="name" className='p-1 block font-medium text-gray-900'>Category Name </label>
-                                        <input type='name' name='categoryName' id='categoryName' className='text-[20px] border-2 py-2.5 px-2 block shadow-md
+                                        <input type='name' name='categoryName' value={categoryName} 
+                                        onChange={(e)=> setcategoryName(e.target.value)} 
+                                        id='categoryName' className='text-[20px] border-2 py-2.5 px-2 block shadow-md
                                          border-gray-400 w-full rounded-lg focus:border-blue-500' placeholder='Category Name' />
                                     </div>
 
                                     <div className='mb-5 p-1'>
                                         <label for="order" className='p-1 block font-medium text-gray-900'>Order</label>
-                                        <input type='number' name='categoryOrder' id='categoryOrder' className='text-[20px] border-2 py-2.5 px-2 block shadow-md
+                                        <input type='number' name='categoryOrder' value={categoryOrder}
+                                        onChange={(e)=> setcategoryOrder(e.target.value)}
+                                        id='categoryOrder' className='text-[20px] border-2 py-2.5 px-2 block shadow-md
                                      border-gray-400 w-full rounded-lg focus:border-blue-500' placeholder='Order' />
                                     </div>
 

@@ -7,7 +7,7 @@ import { IoMdSearch } from "react-icons/io";
 import Swal from 'sweetalert2/dist/sweetalert2.js'
 import 'sweetalert2/src/sweetalert2.scss'
 
-export default function TableHeader({ module, linkName, ids, setIds, getData, setSearchName, setSearchOrder }) {
+export default function TableHeader({ module, linkName, ids, setIds, getData, setSearchName, setSearchOrder, searchField1, searchField2, setLimit }) {
     const [filterSearch, setFilterSearch] = useState(false);
     let apiBaseUrl = import.meta.env.VITE_APIBASEURL //http://localhost:8000/admin/
 
@@ -72,21 +72,6 @@ console.log(setSearchName)
             })
     }
 
-    let checkSearchName=(event)=>{
-        const { value } = event.target;
-
-    // Check if value represents a number
-    if (!isNaN(value) && value.trim() !== "") {
-      console.log("It's a number:", value);
-      setSearchOrder(value)
-      setSearchName('')
-    } else {
-      console.log("It's a string:", value);
-      setSearchName(value)
-      setSearchOrder('')
-    }
-        
-    }
     return (
         <div>
             <ToastContainer />
@@ -94,10 +79,18 @@ console.log(setSearchName)
                 <div className=" bg-[#F9FAFB] p-4 mb-5">
                     <form className="flex gap-2">
                         <input
-                            onChange={checkSearchName}
+                           
                             type="text"
-                            placeholder="Search name"
-                            className="w-[400px] text-[14px] px-4 py-3 mr-2 border border-[#00000025] rounded-[4px]"
+                            placeholder="Search by name"
+                            className="w-[400px] bg-white text-[14px] px-4 py-3 mr-2 border border-[#00000025] rounded-[4px]"
+                            value={searchField1} onChange={(e)=>setSearchName(e.target.value)}
+                        />
+                         <input
+                            
+                            type="text"
+                            placeholder="Search by order"
+                            className="w-[400px] bg-white text-[14px] px-4 py-3 mr-2 border border-[#00000025] rounded-[4px]"
+                            value={searchField2} onChange={(e) => setSearchOrder(e.target.value)}
                         />
                         <div className="bg-[#1E40AF] text-[#fff] p-3 text-[18px] rounded-[4px]">
                             <IoMdSearch onClick={getData} />
@@ -110,10 +103,17 @@ console.log(setSearchName)
             )}
 
 
-            <div className='flex items-center justify-between bg-slate-100 py-3 px-4 border rounded-t-md border-slate-400'>
+            <div className='flex items-center justify-between bg-slate-200 py-3 px-4 border rounded-t-md border-slate-400'>
 
                 <h3 className='text-[26px] font-semibold'>{linkName} {setIds} </h3>
-                <div className='flex justify-between'>
+                <div className='flex justify-between gap-5'>
+
+                    <select onChange={(e)=>setLimit(e.target.value)} className="bg-white rounded-[8px] cursor-pointer p-3 font-semibold">
+                        <option value={2}>Change Page Limit</option>
+                          <option value={10}>10</option>
+                            <option value={12}>12</option>
+                              <option value={15}>15</option>
+                    </select>
                     <button
                         onClick={() => setFilterSearch(!filterSearch)}
                         className="bg-[#1D4ED8] hover:bg-[#1d33d8] text-white p-3 mr-3 rounded-[8px] cursor-pointer"
@@ -121,10 +121,10 @@ console.log(setSearchName)
                         {/* <FaFilter /> */}
                         {filterSearch ? <MdFilterAltOff /> : <MdFilterAlt />}
                     </button>
-                    <button onClick={changeStatus} className='text-white font-medium px-4 bg-green-700 rounded-lg focus:outline-none hover:bg-green-900'>
+                    <button onClick={changeStatus} className=' cursor-pointer text-white font-medium px-4 bg-green-700 rounded-lg focus:outline-none hover:bg-green-900'>
                         Change Status
                     </button>
-                    <button onClick={deleteData} className='text-white font-medium px-4 mx-4 bg-red-700 rounded-lg focus:outline-none hover:bg-red-900'>
+                    <button onClick={deleteData} className='cursor-pointer text-white font-medium px-4 mx-4 bg-red-700 rounded-lg focus:outline-none hover:bg-red-900'>
                         Delete
                     </button>
                 </div>

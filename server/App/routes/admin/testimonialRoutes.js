@@ -1,6 +1,6 @@
 let express = require("express")
 const multer=require('multer')
-const { testimonialInsert } = require("../../controllers/admin/testimonialController")
+const { testimonialInsert, testimonialView, testimonialDelete, changeStatus } = require("../../controllers/admin/testimonialController")
 let storage=multer.diskStorage({
 
     destination:function(req,file,cb){
@@ -14,7 +14,7 @@ const upload= multer({storage: storage})
 
 let testimonialRoutes= express.Router();
 testimonialRoutes.post('/insert',upload.single('userImage'), testimonialInsert)
-/* testimonialRoutes.get('/view')
-testimonialRoutes("/multi-delete") */
-
+testimonialRoutes.get('/view', testimonialView)
+testimonialRoutes.post("/multi-delete/",testimonialDelete) 
+testimonialRoutes.post("/changeStatus", changeStatus)
 module.exports={testimonialRoutes}

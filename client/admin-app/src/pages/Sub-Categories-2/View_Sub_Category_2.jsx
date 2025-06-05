@@ -1,11 +1,31 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router'
 import { FaFilter } from "react-icons/fa";
 import { FaPen } from "react-icons/fa";
 
 import HeaderSubCategory from '../../common/HeaderSubCategory';
+import axios from 'axios';
 export default function View_Sub_Category_2() {
-    const linkName = "View Sub Category";
+    const linkName = "View Sub SubCategory";
+    let [subsubcatList, setSubSubCatList] = useState([])
+    let [staticPath, setStaticPath] = useState('')
+    let apiBaseUrl = import.meta.env.VITE_APIBASEURL
+
+    let getSubSubCategories = () => {
+        axios.get(`${apiBaseUrl}sub_subcategory/view`)
+            .then((res) => res.data)
+            .then((finalRes) => {
+                console.log(finalRes)
+                setSubSubCatList(finalRes.data)
+                setStaticPath(finalRes.staticPath)
+                //  setTotalpages(finalRes.pages)
+            })
+
+    }
+
+    useEffect(() => {
+        getSubSubCategories()
+    }, [])
     return (
         <div>
             <section className='w-full'>
@@ -23,7 +43,7 @@ export default function View_Sub_Category_2() {
                 <div className='border-b-2 text-gray-300'></div>
                 <div className='w-full min-h-[620px]'>
                     <div className='max-w-[1220px] mx-auto py-5'>
-                      
+
                         <HeaderSubCategory linkName={linkName} />
                         <div className='border border-slate-400 border-t-0 rounded-b-md'>
 
@@ -45,47 +65,62 @@ export default function View_Sub_Category_2() {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr className='bg-white hover:bg-gray-50'>
-                                            <th className='w-4 p-4'>
-                                                <input type='checkbox' className='text-blue-600 text-sm rounded-sm w-4 h-4 border-gray-400 ' />
-                                            </th>
-                                            <th scope='row' className=' text-[15px] px-6 py-4'>
 
-                                                Men
+                                        {
 
-                                            </th>
+                                            subsubcatList.map((items, index) => {
+                                                return (
 
 
-                                            <th scope='row' className=' text-[15px] px-6 py-4'>
+                                                    <tr className='bg-white hover:bg-gray-50'>
+                                                        <th className='w-4 p-4'>
+                                                            <input type='checkbox' className='text-blue-600 text-sm rounded-sm w-4 h-4 border-gray-400 ' />
+                                                        </th>
+                                                        <th scope='row' className=' text-[15px] px-6 py-4'>
 
-                                                Men
+                                                            {items.subCategory.parentCategory.categoryName}
 
-                                            </th>
-                                            <th scope='row' className='  text-[15px] px-6 py-4'>
+                                                        </th>
 
-                                                Shoes
 
-                                            </th>
-                                            <th className='px-6 py-4'>
-                                                <img src='https://packshifts.in/images/iso.png' className='w-10 h-10 rounded-full' />
-                                            </th>
-                                            <th className='text-[15px] px-6  py-4'>1</th>
+                                                        <th scope='row' className=' text-[15px] px-6 py-4'>
 
-                                            <th className=' px-6 py-4'>
-                                                <button className='text-white font-medium px-5 py-2 bg-green-700 rounded-lg focus:outline-none hover:bg-green-900'>
-                                                    Active
-                                                </button>
-                                            </th>
-                                            <th className='px-2 py-4'>
+                                                           {items.subCategory.subcategoryName}
 
-                                                <div className='w-[40px]  flex items-center justify-center h-[40px] rounded-[50%] bg-blue-700 hover:bg-blue-800'>
-                                                    <Link to={'/user'}>
-                                                        <FaPen className='text-white ' />
-                                                    </Link>
-                                                </div>
+                                                        </th>
+                                                        <th scope='row' className='  text-[15px] px-6 py-4'>
 
-                                            </th>
-                                        </tr>
+                                                            {items.sub_subcatName}
+
+                                                        </th>
+                                                        <th className='px-6 py-4'>
+                                                            <img src={staticPath + items.sub_subcatImage} className='mx-5 w-10 h-10 rounded-full' />
+                                                        </th>
+                                                        <th className='text-[15px] px-6  py-4'>{items.sub_subcatOrder}</th>
+
+                                                        {items.sub_subcatstatus ?
+                                                            <button className='text-white font-medium px-5 py-2 bg-green-700 rounded-lg focus:outline-none hover:bg-green-900'>
+                                                                Active
+                                                            </button>
+                                                            :
+                                                            <button className='text-white font-medium px-5 py-2 bg-red-700 rounded-lg focus:outline-none hover:bg-red-900'>
+                                                                Deactive
+                                                            </button>
+                                                        }
+                                                        <th className='px-2 py-4'>
+                                                            <Link to={'/update-Category/${items._id}'}>
+                                                                <button className='w-[40px] relative   h-[40px] rounded-[50%] bg-blue-700 hover:bg-blue-800'>
+
+                                                                    <FaPen className='text-white absolute left-3 bottom-3' />
+
+                                                                </button>
+                                                            </Link>
+
+                                                        </th>
+                                                    </tr>
+                                                )
+                                            })
+                                        }
 
                                     </tbody>
                                 </table>

@@ -5,13 +5,14 @@ import { FaFilter } from "react-icons/fa";
 import { FaPen } from "react-icons/fa";
 import TableHeader from '../../common/TableHeader';
 import { event } from 'jquery';
+import SelectCheckbox from '../../common/SelectCheckbox';
 export default function View_Faq() {
     const linkName = "View Faq";
-    const module="faq";
+    const module = "faq";
     let [faqList, setFaqList] = useState([])
     let apiBaseUrl = import.meta.env.VITE_APIBASEURL
-     const [ids,setIds]=useState([])
-
+    const [ids, setIds] = useState([])
+    let [selectAll, setSelectAll] = useState(false)
 
     let getFaqs = () => {
         axios.get(`${apiBaseUrl}faq/view`)
@@ -27,19 +28,19 @@ export default function View_Faq() {
         getFaqs()
     }, [])
 
-    useEffect(()=>{
-        console.log("useeffect",ids)
-    },[ids])
+    useEffect(() => {
+        console.log("useeffect", ids)
+    }, [ids])
 
-let getAllCheckedvalue=(event)=>{
-    if(event.target.checked && !ids.includes(event.target.value)){
-        setIds([...ids,event.target.value])
-        console.log(setIds)
+    let getAllCheckedvalue = (event) => {
+        if (event.target.checked && !ids.includes(event.target.value)) {
+            setIds([...ids, event.target.value])
+            console.log(setIds)
+        }
+        else {
+            setIds(ids.filter((v) => v != event.target.value))
+        }
     }
-    else{
-        setIds(ids.filter((v)=>v!=event.target.value))
-    }
-}
 
     return (
         <div>
@@ -68,7 +69,7 @@ let getAllCheckedvalue=(event)=>{
                                     <thead className='text-gray-900 text-[12px] uppercase bg-gray-50'>
                                         <tr>
                                             <th>
-                                                <input type='checkbox' className='text-blue-600 text-sm rounded-sm w-4 h-4 border-gray-400 ' />
+                                                <SelectCheckbox ids={ids} setIds={setIds} list={faqList} selectAll={selectAll} setSelectAll={setSelectAll} />
                                             </th>
                                             <th scope='col' className='px-6 py-3'>Question</th>
                                             <th scope='col' className='w-12%]'>Answer</th>
@@ -116,26 +117,26 @@ let getAllCheckedvalue=(event)=>{
 
                                                             </th>
                                                             <th className='px-2 py-4'>
-                                                                     <Link to={`/add-faq/${items._id}`} className=''>
-                                                                <button className='w-[40px] h-[40px] rounded-[50%] relative bg-blue-700 hover:bg-blue-800'>
-                                                                   
+                                                                <Link to={`/add-faq/${items._id}`} className=''>
+                                                                    <button className='w-[40px] h-[40px] rounded-[50%] relative bg-blue-700 hover:bg-blue-800'>
+
                                                                         <FaPen className='text-white absolute left-3 bottom-3' />
-                                                                  
-                                                                </button>
-                                                                  </Link>
+
+                                                                    </button>
+                                                                </Link>
 
                                                             </th>
                                                         </tr>
                                                     )
-                                            })
-                                        :
-                                        <tr>
-                                            <td colSpan={6}>
+                                                })
+                                                :
+                                                <tr>
+                                                    <td colSpan={6}>
 
-                                                No Data Found
+                                                        No Data Found
 
-                                            </td>
-                                        </tr>
+                                                    </td>
+                                                </tr>
                                         }
                                     </tbody>
                                 </table>

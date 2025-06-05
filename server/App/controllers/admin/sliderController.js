@@ -88,5 +88,20 @@ let sliderDelete = async(req,res)=>{
 }
 
 
+let changeStatus = async(req,res)=>{
+    let {ids}= req.body
+    let data=await sliderModel.updateMany(
+        {_id:ids}, [{ $set: {sliderStatus:{$not: "$sliderStatus"}}}]
+    )
 
-module.exports = { sliderInsert, sliderView, sliderDelete }
+    let obj={
+
+        status: 1,
+        msg: "Status has been changed!!",
+        data
+    }
+    res.send(obj)
+}
+
+
+module.exports = { sliderInsert, sliderView, sliderDelete, changeStatus}

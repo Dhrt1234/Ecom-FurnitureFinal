@@ -33,13 +33,15 @@ let materialInsert = async (req, res) => {
 }
 
 let materialView = async (req, res) => {
-        
+
+    let {currentPage,limit} = req.query;
+    
     let searchobj = {
 
 
     }
-    console.log("matname",req.query.materialName)
-      console.log("matorder",req.query.materialOrder)
+    console.log("matname", req.query.materialName)
+    console.log("matorder", req.query.materialOrder)
 
     if (req.query.materialName != "") {
         //searchobj['materialName']= {$regex:req.query.materialName, $options: "i"} through moongoose
@@ -51,19 +53,25 @@ let materialView = async (req, res) => {
         console.log("searchobj", searchobj['materialOrder'])
     }
 
- /*  if (req.query.materialstatus = "") {
-        searchobj['materialstatus'] = Boolean(req.query.materialstatus)
-    } */
+   
     try {
-        let data = await materialModel.find(searchobj)
 
+        let finalSkip=(currentPage-1)*limit;
+
+        let data = await materialModel.find(searchobj).skip(finalSkip).limit(limit);
+        
+        let allData = await materialModel.find(searchobj);
+        
         let obj = {
             status: 1,
+            totalData: allData.length,
+            pages: Math.ceil(allData.length/limit),
             msg: "materials display",
             data
+
         }
         res.send(obj)
-        console.log("suc",obj)
+        console.log("suc", obj)
     }
 
     catch (error) {
@@ -72,7 +80,7 @@ let materialView = async (req, res) => {
             error
         }
         res.send(obj)
-        console.log("error",obj)
+        console.log("error", obj)
     }
 
 }
@@ -188,4 +196,6 @@ let changeStatus = async (req, res) => {
     res.send(obj)
 
 }
+
+
 module.exports = { materialInsert, materialView, materialDelete, materialMultiDelete, materialUpdate, singleMaterialView, changeStatus }

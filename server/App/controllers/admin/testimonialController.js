@@ -46,5 +46,53 @@ const { testimonialModel } = require("../../models/testimonialModel");
         res.send(obj)
     }
  }
+ 
+let testimonialView=async(req,res)=>{
 
- module.exports={testimonialInsert}
+    let data=await testimonialModel.find()
+    let obj={
+        status:1,
+        msg:"testimonial view",
+        staticPath:process.env.TESTIMONIALIMAGEPATH,
+         data
+    }
+
+    res.send(obj)
+}
+let testimonialDelete = async(req,res)=>{
+    let {ids} = req.body
+    let testimonialView= await testimonialModel.find({_id: ids}).select("userImage")
+
+
+    for(let v of testimonialView){
+        let deletePath= "uploads/testimonial/"+ v.userImage;
+        console.log(deletePath)
+        console.log(fs.unlinkSync(deletePath))
+
+    }
+
+    let data = await testimonialModel.deleteMany({_id: ids})
+
+    let obj= {
+        status:1,
+        msg:"Testimonial is deleted successfully!!"
+    }
+
+    res.send(obj)
+    }
+    let changeStatus = async (req, res) => {
+    let { ids } = req.body
+
+    let data = await testimonialModel.updateMany(
+        { _id: ids }, [{ $set: { status: { $not: "$status" } } }]
+    )
+
+    let obj = {
+        status: 1,
+        msg: " Status has been changed!!",
+        data
+    }
+    res.send(obj)
+}
+
+ module.exports={testimonialInsert, testimonialView, testimonialDelete, changeStatus}

@@ -4,12 +4,19 @@ import { FaFilter } from "react-icons/fa";
 import { FaPen } from "react-icons/fa";
 import TableHeader from '../../common/TableHeader';
 import axios from 'axios';
+import SelectCheckbox from '../../common/SelectCheckbox';
+
+
 export default function View_Country() {
     const module="country";
     const linkName = "View Country";
     let [countryList, setCountryList] = useState([])
     let apiBaseUrl = import.meta.env.VITE_APIBASEURL
     const [ids, setIds] = useState([])
+
+    let [selectAll, setSelectAll] = useState(false)
+
+
     let getCountries = () => {
         axios.get(`${apiBaseUrl}country/view`)
             .then((res) => res.data)
@@ -65,7 +72,7 @@ export default function View_Country() {
                                     <thead className='text-gray-900 text-[12px] uppercase bg-gray-50'>
                                         <tr>
                                             <th>
-                                                <input type='checkbox' className='text-blue-600 text-sm rounded-sm w-4 h-4 border-gray-400 ' />
+                                                 <SelectCheckbox ids={ids} setIds={setIds} list={countryList} selectAll={selectAll} setSelectAll={setSelectAll} />
                                             </th>
                                             <th scope='col' className='px-6 py-3'>Country Name</th>
                                             <th scope='col' className='w-[12%]'>Code</th>

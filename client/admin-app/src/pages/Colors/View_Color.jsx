@@ -4,7 +4,7 @@ import axios from 'axios';
 import { FaFilter } from "react-icons/fa";
 import { FaPen } from "react-icons/fa";
 import TableHeader from '../../common/TableHeader';
-
+import SelectCheckbox from '../../common/SelectCheckbox';
 
 export default function View_Color() {
     const linkName = "View Color";
@@ -12,7 +12,7 @@ export default function View_Color() {
     let [colorList, setColorList] = useState([])
     let apiBaseUrl = import.meta.env.VITE_APIBASEURL
     const [ids, setIds] = useState([])
-
+    let [selectAll, setSelectAll] = useState(false)
 
     let getcolors = () => {
         axios.get(`${apiBaseUrl}color/view`)
@@ -41,7 +41,7 @@ export default function View_Color() {
         }
     }
 
-   
+
 
 
     return (
@@ -70,7 +70,7 @@ export default function View_Color() {
                                     <thead className='text-gray-900 text-[12px] uppercase bg-gray-50'>
                                         <tr>
                                             <th>
-                                                <input type='checkbox' className='text-blue-600 text-sm rounded-sm w-4 h-4 border-gray-400 ' />
+                                                <SelectCheckbox ids={ids} setIds={setIds} list={colorList} selectAll={selectAll} setSelectAll={setSelectAll} />
                                             </th>
                                             <th scope='col' className='px-6 py-3'>ColorName</th>
                                             <th scope='col' className='w-[12%]'>Code</th>
@@ -110,13 +110,13 @@ export default function View_Color() {
                                                         </th>
                                                         <th className='px-2 py-4'>
 
-                                                                <Link to={`/add-color/${items._id}`} className=''>
-                                                            <button className='w-[40px] h-[40px] rounded-[50%] relative bg-blue-700 hover:bg-blue-800'>
-                                                                
+                                                            <Link to={`/add-color/${items._id}`} className=''>
+                                                                <button className='w-[40px] h-[40px] rounded-[50%] relative bg-blue-700 hover:bg-blue-800'>
+
                                                                     <FaPen className='text-white absolute left-3 bottom-3' />
-                                                               
-                                                            </button>
-                                                             </Link>
+
+                                                                </button>
+                                                            </Link>
 
                                                         </th>
                                                     </tr>
