@@ -6,8 +6,10 @@ import TableHeader from '../../common/TableHeader';
 import axios from 'axios';
 import { event } from 'jquery';
 import SelectCheckbox from '../../common/SelectCheckbox';
+import ResponsivePagination from 'react-responsive-pagination';
+
 export default function View_Slider() {
-    
+
     const module = "slider";
     const linkName = "View Slider";
     let [sliderList, setSliderList] = useState([])
@@ -15,22 +17,33 @@ export default function View_Slider() {
     let apiBaseUrl = import.meta.env.VITE_APIBASEURL
     let [ids, setIds] = useState([])
     let [selectAll, setSelectAll] = useState(false)
-
+    const [currentPage, setCurrentPage] = useState(1);
+    let [totalpages, setTotalpages] = useState(0);
+    let [limit, setLimit] = useState(2);
+    let [title,setTitle] =  useState('')
 
     let getSliders = () => {
-        axios.get(`${apiBaseUrl}slider/view`)
+        axios.get(`${apiBaseUrl}slider/view`,{
+
+            params:{
+                title,
+                currentPage,
+                limit
+            }
+        })
             .then((res) => res.data)
             .then((finalRes) => {
                 console.log(finalRes)
                 setSliderList(finalRes.data)
                 setStaticPath(finalRes.staticPath)
+                 setTotalpages(finalRes.pages)
             })
 
     }
 
     useEffect(() => {
         getSliders()
-    }, [])
+    }, [title,currentPage,limit])
 
     let checkSlider = (event) => {
         if (event.target.checked && !ids.includes(event.target.value)) {
@@ -62,7 +75,7 @@ export default function View_Slider() {
                 <div className='border-b-2 text-gray-300'></div>
                 <div className='w-full min-h-[620px]'>
                     <div className='max-w-[1220px] mx-auto py-5'>
-                        <TableHeader module={module} linkName={linkName} ids={ids} setIds={setIds} getData={getSliders} />
+                        <TableHeader module={module} linkName={linkName} ids={ids} setIds={setIds} getData={getSliders} setSearchName={setTitle} searchField1={title} setLimit={setLimit} />
                         <div className='border border-slate-400 border-t-0 rounded-b-md'>
 
                             <div className='overflow-x-auto'>
@@ -73,6 +86,7 @@ export default function View_Slider() {
                                             <th>
                                                 <SelectCheckbox ids={ids} setIds={setIds} list={sliderList} selectAll={selectAll} setSelectAll={setSelectAll} />
                                             </th>
+                                              <th scope='col' className='px-6 py-3'>SR. No</th>
                                             <th scope='col' className='px-6 py-3'>Name</th>
                                             <th scope='col' className='px-6 py-3'>Image</th>
 
@@ -82,7 +96,7 @@ export default function View_Slider() {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {
+                                        {sliderList.length >= 1 ?
 
                                             sliderList.map((items, index) => {
 
@@ -90,6 +104,11 @@ export default function View_Slider() {
                                                     <tr className='bg-white hover:bg-gray-50'>
                                                         <th className='w-4 p-4'>
                                                             <input type='checkbox' onChange={checkSlider} value={items._id} checked={ids.includes(items._id)} className='text-blue-600 text-sm rounded-sm w-4 h-4 border-gray-400 ' />
+                                                        </th>
+                                                        <th className=' py-4'>
+                                                           {
+                                                            (currentPage-1)*limit+(index+1)
+                                                           }
                                                         </th>
                                                         <th scope='row' className=' text-[15px] px-6 py-4'>
 
@@ -132,6 +151,14 @@ export default function View_Slider() {
                                                     </tr>
                                                 )
                                             })
+                                              :
+                                            <tr>
+
+                                                <td colSpan={6}>
+
+                                                    NO Data Found
+                                                </td>
+                                            </tr>
                                         }
 
                                     </tbody>
@@ -140,6 +167,11 @@ export default function View_Slider() {
                         </div>
                     </div>
                 </div>
+                <ResponsivePagination
+                    current={currentPage}
+                    total={totalpages}
+                    onPageChange={setCurrentPage}
+                />
             </section>
 
 

@@ -1,15 +1,61 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { IoMdMail } from "react-icons/io";
 import { IoPhonePortrait } from "react-icons/io5";
 import { Link } from "react-router";
 import $ from "jquery";
 import "dropify/dist/js/dropify.min.js";
 import "dropify/dist/css/dropify.min.css";
+import { loginContext } from "../Context/MainContext";
+import axios from "axios";
 
 
 
 export default function Profile() {
     const [profile, setProfile] = useState(true);
+    let [error,setError]=useState('')
+    let [msg,setMsg]=useState('')
+    let {adminID}=useContext(loginContext)
+    let apiBaseUrl = import.meta.env.VITE_APIBASEURL
+
+    let changePassword=(event)=>{
+        alert("hi")
+        event.preventDefault()
+        let currentPassword=event.target.currentPassword.value;
+        let newPassword=event.target.newPassword.value;
+        let confirmPassword=event.target.confirmPassword.value;
+
+        if(newPassword!=confirmPassword){
+            return setError("New password or Confirm Password Not matched")
+            
+        }
+
+        axios.post(`${apiBaseUrl}auth/change-password`,{
+            currentPassword,
+            newPassword,
+            adminID
+        })
+        .then((res)=>res.data)
+        .then((finalRes)=>{
+            if(finalRes.status){ //1
+                //Login
+                setMsg(finalRes.msg)
+                event.target.reset()
+                setTimeout(()=>{
+                    setMsg('')
+                },2000)
+
+                
+            }
+            else{
+
+                setError(finalRes.msg)
+                setTimeout(()=>{
+                    setError('')
+                },2000)
+               
+            }
+        })
+    }
 
     useEffect(() => {
         $(".dropify").dropify({
@@ -89,7 +135,7 @@ export default function Profile() {
                                         </li>
                                     </ul>
                                 </div>
-                                <form action="">
+                               
                                     {profile ? (
                                         <div>
                                             <div className="flex lg:flex-nowrap flex-wrap gap-4 mt-2">
@@ -155,52 +201,61 @@ export default function Profile() {
                                         </div>
                                     ) : (
                                         <div>
-                                            <div className="flex flex-col mt-2">
-                                                <label className="mb-1">
-                                                    <b>Current Password</b>
-                                                </label>
-                                                <input
-                                                    type="text"
-                                                    className=" border border-[#0000004a] rounded-[5px] outline-0 px-3 py-1 "
-                                                    placeholder="Current Password"
-                                                    required
-                                                />
-                                            </div>
+                                            <form onSubmit={changePassword}>
+                                                {error != '' && <p className='text-red-500'> {error} </p>}
 
-                                            <div className="flex flex-col mt-4">
-                                                <label className="mb-1">
-                                                    <b>New Password</b>
-                                                </label>
-                                                <input
-                                                    type="text"
-                                                    className=" border border-[#0000004a] rounded-[5px] outline-0 px-3 py-1 "
-                                                    placeholder="New Password
+                                                {msg != '' && <p className='text-red-500'> {msg} </p>}
+                                                <div className="flex flex-col mt-2">
+                                                    <label className="mb-1">
+                                                        <b>Current Password</b>
+                                                    </label>
+                                                    <input
+                                                        type="password"
+                                                        name="currentPassword"
+                                                        className=" border border-[#0000004a] rounded-[5px] outline-0 px-3 py-1 "
+                                                        placeholder="Current Password"
+                                                        required
+                                                    />
+                                                </div>
+
+                                                <div className="flex flex-col mt-4">
+                                                    <label className="mb-1">
+                                                        <b>New Password</b>
+                                                    </label>
+                                                    <input
+                                                        type="password"
+                                                        name="newPassword"
+                                                        className=" border border-[#0000004a] rounded-[5px] outline-0 px-3 py-1 "
+                                                        placeholder="New Password
 "
-                                                    required
-                                                />
-                                            </div>
+                                                        required
+                                                    />
+                                                </div>
 
-                                            <div className="flex flex-col mt-4">
-                                                <label className="mb-1">
-                                                    <b>Confirm Password</b>
-                                                </label>
-                                                <input
-                                                    type="text"
-                                                    className=" border border-[#0000004a] rounded-[5px] outline-0 px-3 py-1 "
-                                                    placeholder="Confirm Password"
-                                                    required
-                                                />
-                                            </div>
+                                                <div className="flex flex-col mt-4">
+                                                    <label className="mb-1">
+                                                        <b>Confirm Password</b>
+                                                    </label>
+                                                    <input
+                                                        type="password"
+                                                        name="confirmPassword"
+                                                        className=" border border-[#0000004a] rounded-[5px] outline-0 px-3 py-1 "
+                                                        placeholder="Confirm Password"
+                                                        required
+                                                    />
+                                                </div>
 
-                                            <button
-                                                className="bg-[#7E22CE] text-[#fff] py-2 px-3 rounded-[8px] font-[500]  cursor-pointer my-4"
-                                                onSubmit={(e) => e.preventDefault()}
-                                            >
-                                                Change Password
-                                            </button>
+                                                <button
+                                                type="submit"
+                                                    className="bg-[#7E22CE] text-[#fff] py-2 px-3 rounded-[8px] font-[500]  cursor-pointer my-4"
+                                                  
+                                                >
+                                                    Change Password
+                                                </button>
+                                            </form>
                                         </div>
                                     )}
-                                </form>
+                            
                             </div>
                         </div>
                     </div>

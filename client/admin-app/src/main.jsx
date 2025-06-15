@@ -35,14 +35,17 @@ import View_Product from './pages/Product/View_Product'
 import Order from './pages/Order/Order'
 import Profile from './pages/Profile'
 import Company_Profile from './pages/Company_Profile'
+import MainContext from './Context/MainContext';
+import ForgotPassword from './pages/ForgotPassword';
 
 
 
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
+<MainContext>
     <BrowserRouter>
       <Routes>
         <Route path='/' element={<Login />} />
+        <Route path='/forgot-password' element={<ForgotPassword />}/> 
         <Route path='/' element={<MainLayout />}>
 
           <Route path='/user' element={<User />} />
@@ -64,11 +67,18 @@ createRoot(document.getElementById('root')).render(
         
          <Route path='/add-category/:id?' element={<Add_Category />} />
           <Route path='/view-category' element={<View_Category />} />
-         
+        
+           { /*sub category */}
           <Route path='/add-Sub-category' element={<Add_Sub_Category />} />
           <Route path='/view-Sub-category' element={<View_Sub_Category />} />
+          <Route path='/update-Sub-category/:id' element={<Add_Sub_Category />} />
+         
+         
           <Route path='/add-Sub-category_2' element={<Add_Sub_Category_2 />} />
           <Route path='/view-Sub-category_2' element={<View_Sub_Category_2 />} />
+            <Route path='/update-Sub-category_2/:id' element={<Add_Sub_Category_2 />} />
+      
+      
           <Route path='/add-why' element={<Add_Why />} />
           <Route path='/view-why' element={<View_why />} />
           <Route path='/add-slider' element={<Add_Slider />} />
@@ -99,6 +109,7 @@ createRoot(document.getElementById('root')).render(
 
 
     </BrowserRouter>
-  </StrictMode>,
+    </MainContext>
+
 )
 

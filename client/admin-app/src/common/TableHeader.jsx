@@ -7,7 +7,7 @@ import { IoMdSearch } from "react-icons/io";
 import Swal from 'sweetalert2/dist/sweetalert2.js'
 import 'sweetalert2/src/sweetalert2.scss'
 
-export default function TableHeader({ module, linkName, ids, setIds, getData, setSearchName, setSearchOrder, searchField1, searchField2, setLimit }) {
+export default function TableHeader({ module, linkName, ids, setIds, getData, setSearchName,searchField1,setLimit /*  , searchField2, setSearchOrder  */ }) {
     const [filterSearch, setFilterSearch] = useState(false);
     let apiBaseUrl = import.meta.env.VITE_APIBASEURL //http://localhost:8000/admin/
 
@@ -85,13 +85,13 @@ console.log(setSearchName)
                             className="w-[400px] bg-white text-[14px] px-4 py-3 mr-2 border border-[#00000025] rounded-[4px]"
                             value={searchField1} onChange={(e)=>setSearchName(e.target.value)}
                         />
-                         <input
+                      {/*    <input
                             
                             type="text"
                             placeholder="Search by order"
                             className="w-[400px] bg-white text-[14px] px-4 py-3 mr-2 border border-[#00000025] rounded-[4px]"
                             value={searchField2} onChange={(e) => setSearchOrder(e.target.value)}
-                        />
+                        /> */}
                         <div className="bg-[#1E40AF] text-[#fff] p-3 text-[18px] rounded-[4px]">
                             <IoMdSearch onClick={getData} />
                         </div>
@@ -109,11 +109,12 @@ console.log(setSearchName)
                 <div className='flex justify-between gap-5'>
 
                     <select onChange={(e)=>setLimit(e.target.value)} className="bg-white rounded-[8px] cursor-pointer p-3 font-semibold">
-                        <option value={2}>Change Page Limit</option>
+                        <option value={5}>Change Page Limit</option>
                           <option value={10}>10</option>
                             <option value={12}>12</option>
                               <option value={15}>15</option>
                     </select>
+                 
                     <button
                         onClick={() => setFilterSearch(!filterSearch)}
                         className="bg-[#1D4ED8] hover:bg-[#1d33d8] text-white p-3 mr-3 rounded-[8px] cursor-pointer"

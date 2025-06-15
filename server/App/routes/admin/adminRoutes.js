@@ -9,6 +9,8 @@ const { sliderRoutes} = require("./sliderRoutes")
 const { testimonialRoutes } = require("./testimonialRoutes")
 const { subcategoryRoutes } = require("./subcategoryRoutes")
 const { sub_subcategoryRoutes } = require("./sub-subcategoryRoutes")
+const { adminauthRoutes } = require("./adminauthRoute")
+const { productRoutes } = require("./productRoutes")
 let adminRoutes=express.Router()
 
 //http://localhost:8000/admin/login
@@ -33,4 +35,7 @@ adminRoutes.use("/slider", sliderRoutes)
 adminRoutes.use("/testimonial", testimonialRoutes)
 adminRoutes.use("/subcategory", subcategoryRoutes)
 adminRoutes.use("/sub_subcategory", sub_subcategoryRoutes)
+adminRoutes.use("/auth",adminauthRoutes)
+adminRoutes.use("/product",productRoutes)
+
 module.exports={adminRoutes}

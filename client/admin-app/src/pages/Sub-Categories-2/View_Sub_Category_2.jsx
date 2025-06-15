@@ -2,30 +2,68 @@ import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router'
 import { FaFilter } from "react-icons/fa";
 import { FaPen } from "react-icons/fa";
-
+import ResponsivePagination from 'react-responsive-pagination';
 import HeaderSubCategory from '../../common/HeaderSubCategory';
 import axios from 'axios';
+import SelectCheckbox from '../../common/SelectCheckbox';
+
+
 export default function View_Sub_Category_2() {
     const linkName = "View Sub SubCategory";
     let [subsubcatList, setSubSubCatList] = useState([])
     let [staticPath, setStaticPath] = useState('')
     let apiBaseUrl = import.meta.env.VITE_APIBASEURL
+    const module = "sub_subcategory";
+    let [ids, setIds] = useState([])
+    let [parentCategory, setParentCategory] = useState('')
+    let [subCategory, setSubCategory] = useState('')
+    let [sub_subcatName, setSub_SubcatName] = useState('')
+
+    const [currentPage, setCurrentPage] = useState(1);
+    let [totalpages, setTotalpages] = useState(0);
+    let [limit, setLimit] = useState(5);
+      let [selectAll, setSelectAll] = useState(false)
+
 
     let getSubSubCategories = () => {
-        axios.get(`${apiBaseUrl}sub_subcategory/view`)
+        axios.get(`${apiBaseUrl}sub_subcategory/view`, {
+
+            params: {
+                parentCategory,
+                subCategory,
+                sub_subcatName,
+                currentPage,
+                limit
+            }
+        })
             .then((res) => res.data)
             .then((finalRes) => {
                 console.log(finalRes)
                 setSubSubCatList(finalRes.data)
                 setStaticPath(finalRes.staticPath)
-                //  setTotalpages(finalRes.pages)
+                setTotalpages(finalRes.pages)
             })
 
     }
 
+
+    let checkedCategory = (event) => {
+        if (event.target.checked && !ids.includes(event.target.value)) {
+            setIds([...ids, event.target.value])
+            console.log("get", setIds)
+        }
+        else {
+
+            setIds(ids.filter((v) => {
+                return v != event.target.value
+            }))
+        }
+    }
+
     useEffect(() => {
         getSubSubCategories()
-    }, [])
+    }, [parentCategory, subCategory, sub_subcatName, currentPage, limit])
+
     return (
         <div>
             <section className='w-full'>
@@ -44,7 +82,11 @@ export default function View_Sub_Category_2() {
                 <div className='w-full min-h-[620px]'>
                     <div className='max-w-[1220px] mx-auto py-5'>
 
-                        <HeaderSubCategory linkName={linkName} />
+                        <HeaderSubCategory module={module} linkName={linkName} ids={ids}
+                            setIds={setIds} getData={getSubSubCategories} parentCategory={parentCategory}
+                            subCategory={subCategory} sub_subcatName={sub_subcatName} setParentCategory={setParentCategory}
+                            setSubCategory={setSubCategory} setSub_SubcatName={setSub_SubcatName} setLimit={setLimit}
+                        />
                         <div className='border border-slate-400 border-t-0 rounded-b-md'>
 
                             <div className='overflow-x-auto'>
@@ -53,8 +95,9 @@ export default function View_Sub_Category_2() {
                                     <thead className='text-gray-900 text-[12px] uppercase bg-gray-50'>
                                         <tr>
                                             <th>
-                                                <input type='checkbox' className='text-blue-600 text-sm rounded-sm w-4 h-4 border-gray-400 ' />
+                                                <SelectCheckbox ids={ids} setIds={setIds} list={subsubcatList} selectAll={selectAll} setSelectAll={setSelectAll} />
                                             </th>
+                                            <th scope='col' className='px-6 py-3'>SR. No</th>
                                             <th scope='col' className='px-6 py-3'>Parent Category</th>
                                             <th scope='col' className='px-6 py-3'>Sub Category</th>
                                             <th scope='col' className='px-6 py-3'>Category Name</th>
@@ -74,8 +117,14 @@ export default function View_Sub_Category_2() {
 
                                                     <tr className='bg-white hover:bg-gray-50'>
                                                         <th className='w-4 p-4'>
-                                                            <input type='checkbox' className='text-blue-600 text-sm rounded-sm w-4 h-4 border-gray-400 ' />
+                                                            <input type='checkbox' onChange={checkedCategory} value={items._id} checked={ids.includes(items._id)} className='text-blue-600 text-sm rounded-sm w-4 h-4 border-gray-400 ' />
                                                         </th>
+                                                        <th className=' py-4'>
+                                                            {
+                                                                (currentPage - 1) * limit + (index + 1)
+                                                            }
+                                                        </th>
+
                                                         <th scope='row' className=' text-[15px] px-6 py-4'>
 
                                                             {items.subCategory.parentCategory.categoryName}
@@ -85,7 +134,7 @@ export default function View_Sub_Category_2() {
 
                                                         <th scope='row' className=' text-[15px] px-6 py-4'>
 
-                                                           {items.subCategory.subcategoryName}
+                                                            {items.subCategory.subcategoryName}
 
                                                         </th>
                                                         <th scope='row' className='  text-[15px] px-6 py-4'>
@@ -108,7 +157,7 @@ export default function View_Sub_Category_2() {
                                                             </button>
                                                         }
                                                         <th className='px-2 py-4'>
-                                                            <Link to={'/update-Category/${items._id}'}>
+                                                            <Link to={`/update-Sub-category_2/${items._id}`}>
                                                                 <button className='w-[40px] relative   h-[40px] rounded-[50%] bg-blue-700 hover:bg-blue-800'>
 
                                                                     <FaPen className='text-white absolute left-3 bottom-3' />
@@ -128,6 +177,12 @@ export default function View_Sub_Category_2() {
                         </div>
                     </div>
                 </div>
+                <ResponsivePagination
+                    current={currentPage}
+                    total={totalpages}
+                    onPageChange={setCurrentPage}
+
+                />
             </section>
         </div>
     )

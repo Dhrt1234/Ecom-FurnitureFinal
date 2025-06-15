@@ -1,5 +1,5 @@
 const { sliderModel } = require("../../models/sliderModel");
-let fs=require("fs")
+let fs = require("fs")
 
 let sliderInsert = async (req, res) => {
 
@@ -44,37 +44,61 @@ let sliderInsert = async (req, res) => {
 }
 
 let sliderView = async (req, res) => {
+    let { currentPage, limit } = req.query;
 
-    let data = await sliderModel.find()
+    let searchobj = {
+
+
+    }
+    if (req.query.title != "") {
+        //searchobj['title']= {$regex:req.query.title, $options: "i"} through moongoose
+        searchobj['title'] = new RegExp(req.query.title, "i") //through RegExp function
+    }
+      try {
+    let finalSkip = (currentPage - 1) * limit;
+    let data = await sliderModel.find(searchobj).skip(finalSkip).limit(limit);
+    let allData = await sliderModel.find(searchobj);
     let obj = {
         status: 1,
+        totalData: allData.length,
+        pages: Math.ceil(allData.length / limit),
         msg: "slider view",
-        staticPath:process.env.SLIDERIMAGEPATH,
+        staticPath: process.env.SLIDERIMAGEPATH,
         data
     }
 
     res.send(obj)
+    console.log("suc", obj)
+}
+  catch (error) {
+        obj = {
+            status: 0,
+            error
+        }
+        res.send(obj)
+        console.log("suc", obj)
+    }
 }
 
-let sliderDelete = async(req,res)=>{
+let sliderDelete = async (req, res) => {
 
-    let {ids} = req.body
-    let sliderView= await sliderModel.find({_id:ids}).select("sliderImage")
+    let { ids } = req.body
+    let sliderView = await sliderModel.find({ _id: ids }).select("sliderImage")
 
 
-    for(let v of sliderView){
-        let deletePath= "uploads/slider/"+v.sliderImage;
+    for (let v of sliderView) {
+        let deletePath = "uploads/slider/" + v.sliderImage;
         fs.unlinkSync(deletePath)
     }
 
 
-    try{
-    let data= await sliderModel.deleteMany({_id:ids})
-    let obj={
-        status:1,
-        msg:"Slider is deleted successfully !!!"
-    }
-    res.send(obj)
+    try {
+        let data = await sliderModel.deleteMany({ _id: ids })
+        let obj = {
+            status: 1,
+            msg: "Slider is deleted successfully !!!"
+        }
+        res.send(obj)
     }
     catch (error) {
         obj = {
@@ -88,13 +112,13 @@ let sliderDelete = async(req,res)=>{
 }
 
 
-let changeStatus = async(req,res)=>{
-    let {ids}= req.body
-    let data=await sliderModel.updateMany(
-        {_id:ids}, [{ $set: {sliderStatus:{$not: "$sliderStatus"}}}]
+let changeStatus = async (req, res) => {
+    let { ids } = req.body
+    let data = await sliderModel.updateMany(
+        { _id: ids }, [{ $set: { sliderStatus: { $not: "$sliderStatus" } } }]
     )
 
-    let obj={
+    let obj = {
 
         status: 1,
         msg: "Status has been changed!!",
@@ -104,4 +128,4 @@ let changeStatus = async(req,res)=>{
 }
 
 
-module.exports = { sliderInsert, sliderView, sliderDelete, changeStatus}
+module.exports = { sliderInsert, sliderView, sliderDelete, changeStatus }

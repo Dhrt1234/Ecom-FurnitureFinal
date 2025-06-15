@@ -35,12 +35,29 @@ let countryInsert = async (req, res) => {
 
 let countryView = async (req, res) => {
 
+      let { currentPage, limit } = req.query;
+
+    let searchobj = {
+
+
+    }
+     if (req.query.countryName != "") {
+        //searchobj['countryName']= {$regex:req.query.countryName, $options: "i"} through moongoose
+        searchobj['countryName'] = new RegExp(req.query.countryName, "i") //through RegExp function
+    }
+
     let obj;
+
     try {
-        let data = await countryModel.find()
+
+        let finalSkip = (currentPage - 1) * limit;
+         let data = await countryModel.find(searchobj).skip(finalSkip).limit(limit);
+        let allData = await countryModel.find(searchobj)
 
         obj = {
             status: 1,
+              totalData: allData.length,
+            pages: Math.ceil(allData.length / limit),
             msg: "country view table",
             data
         }

@@ -1,19 +1,26 @@
-let mongoose=require("mongoose")
-let subcategorySchema= new mongoose.Schema({
-    subcategoryName:{
-        type:String,
-        unique:true,
-        required:true,
-        minLength:2,
-        maxLength:20,
-        lowercase:true
-       
+let mongoose = require("mongoose")
+const {default: slugify} = require("slugify")
+
+let subcategorySchema = new mongoose.Schema({
+    subcategoryName: {
+        type: String,
+        unique: true,
+        required: true,
+        minLength: 2,
+        maxLength: 20,
+        lowercase: true
+
     },                                                             //68349b674839b8e8f61e41f1                 
-    parentCategory: {type: mongoose.Types.ObjectId, ref: "category"}, //68374556e568bbcaa6ba031b
-    subcategoryImage:String,
-    subcategoryOrder:Number,
-    subcategoryStatus:Boolean
+    parentCategory: { type: mongoose.Types.ObjectId, ref: "category" }, //68374556e568bbcaa6ba031b
+    subcategoryImage: String,
+    subcategoryOrder: Number,
+    subcategoryStatus: Boolean,
+    slug: String
 })
 
-let subcategoryModel=mongoose.model("subcategory",subcategorySchema)
-module.exports={subcategoryModel}
+subcategorySchema.pre('save', function (next) {
+    this.slug = slugify(this.subcategoryName, { lower: true });
+    next();
+});
+let subcategoryModel = mongoose.model("subcategory", subcategorySchema)
+module.exports = { subcategoryModel }

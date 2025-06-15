@@ -5,6 +5,7 @@ import { FaFilter } from "react-icons/fa";
 import { FaPen } from "react-icons/fa";
 import TableHeader from '../../common/TableHeader';
 import SelectCheckbox from '../../common/SelectCheckbox';
+import ResponsivePagination from 'react-responsive-pagination';
 
 export default function View_Color() {
     const linkName = "View Color";
@@ -13,19 +14,38 @@ export default function View_Color() {
     let apiBaseUrl = import.meta.env.VITE_APIBASEURL
     const [ids, setIds] = useState([])
     let [selectAll, setSelectAll] = useState(false)
+    let [colorName, setColorName] = useState('')
+    console.log("colorName", colorName)
+  /*   let [colorOrder, SetColorOrder] = useState('')
+    console.log("colorOrder", colorOrder) */
+
+         const [currentPage, setCurrentPage] = useState(1);
+            let [totalpages, setTotalpages]= useState(0);
+            let [limit , setLimit] = useState(2);
+    
+
 
     let getcolors = () => {
-        axios.get(`${apiBaseUrl}color/view`)
+        axios.get(`${apiBaseUrl}color/view`,{
+
+            params:{ 
+                colorName,
+                currentPage,
+                limit
+            }
+        })
             .then((res) => res.data)
             .then((finalRes) => {
                 console.log(finalRes)
                 setColorList(finalRes.data)
+                setTotalpages(finalRes.pages)
             })
 
     }
     useEffect(() => {
         getcolors()
-    }, [])
+    }, [colorName,currentPage,limit])
+
     useEffect(() => {
         console.log("useeffect", ids)
     }, [ids])
@@ -61,7 +81,8 @@ export default function View_Color() {
                 <div className='border-b-2 text-gray-300'></div>
                 <div className='w-full min-h-[620px]'>
                     <div className='max-w-[1220px] mx-auto py-5'>
-                        <TableHeader module={module} linkName={linkName} ids={ids} setIds={setIds} getData={getcolors} />
+                        <TableHeader module={module} linkName={linkName} ids={ids} setIds={setIds}
+                         getData={getcolors} setSearchName={setColorName} searchField1={colorName} setLimit={setLimit} />
                         <div className='border border-slate-400 border-t-0 rounded-b-md'>
 
                             <div className='overflow-x-auto'>
@@ -72,6 +93,7 @@ export default function View_Color() {
                                             <th>
                                                 <SelectCheckbox ids={ids} setIds={setIds} list={colorList} selectAll={selectAll} setSelectAll={setSelectAll} />
                                             </th>
+                                             <th scope='col' className='px-6 py-3'>SR. No</th>
                                             <th scope='col' className='px-6 py-3'>ColorName</th>
                                             <th scope='col' className='w-[12%]'>Code</th>
                                             <th scope='col' className='w-[15%]'>Order</th>
@@ -88,6 +110,11 @@ export default function View_Color() {
                                                     <tr className='bg-white hover:bg-gray-50'>
                                                         <th className='w-4 p-4'>
                                                             <input type='checkbox' onChange={getAllCheckedvalue} value={items._id} checked={ids.includes(items._id)} className='text-blue-600 text-sm rounded-sm w-4 h-4 border-gray-400 ' />
+                                                        </th>
+                                                        <th className=' py-4'>
+                                                           {
+                                                            (currentPage-1)*limit+(index+1)
+                                                           }
                                                         </th>
                                                         <th scope='row' className=' flex items-center text-[15px] px-6 py-4'>
                                                             <div className='px-6 py-4'>
@@ -137,6 +164,12 @@ export default function View_Color() {
                         </div>
                     </div>
                 </div>
+                <ResponsivePagination
+                    current={currentPage}
+                    total={totalpages}
+                    onPageChange={setCurrentPage}
+                />
+
             </section>
 
 

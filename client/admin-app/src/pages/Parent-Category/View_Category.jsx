@@ -85,7 +85,11 @@ export default function View_Category() {
                 <div className='w-full min-h-[620px]'>
                     <div className='max-w-[1220px] mx-auto py-5'>
 
-                        <TableHeader module={module} linkName={linkName} ids={ids} setIds={setIds} getData={getCategories} setSearchName={setCategoryName} setSearchOrder={SetCategoryOrder} searchField1={categoryName} searchField2={categoryOrder} setLimit={setLimit} />
+                        <TableHeader module={module} linkName={linkName} ids={ids}
+                         setIds={setIds} getData={getCategories} setSearchName={setCategoryName} 
+                         setSearchOrder={SetCategoryOrder} searchField1={categoryName} 
+                        searchField2={categoryOrder} setLimit={setLimit} />
+                       
                         <div className='border border-slate-400 border-t-0 rounded-b-md'>
 
                             <div className='overflow-x-auto'>

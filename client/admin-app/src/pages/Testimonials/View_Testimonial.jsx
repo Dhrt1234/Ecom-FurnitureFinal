@@ -5,6 +5,8 @@ import { FaPen } from "react-icons/fa";
 import TableHeader from '../../common/TableHeader';
 import axios from 'axios';
 import SelectCheckbox from '../../common/SelectCheckbox';
+import ResponsivePagination from 'react-responsive-pagination';
+
 
 export default function View_Testimonial() {
     const linkName = "View Testimonial";
@@ -14,23 +16,34 @@ export default function View_Testimonial() {
     let [staticPath, setStaticPath] = useState('')
     let [ids, setIds] = useState([])
     let [selectAll, setSelectAll] = useState(false)
+    let [name, setName] = useState('');
+    const [currentPage, setCurrentPage] = useState(1);
+    let [totalpages, setTotalpages] = useState(0);
+    let [limit, setLimit] = useState(2);
 
-   
-   
+
     let getTestimonials = () => {
-        axios.get(`${apiBaseUrl}testimonial/view`)
+        axios.get(`${apiBaseUrl}testimonial/view`, {
+
+            params: {
+                name,
+                currentPage,
+                limit
+            }
+        })
             .then((res) => res.data)
             .then((finalRes) => {
                 console.log(finalRes)
                 setTestimonialList(finalRes.data)
                 setStaticPath(finalRes.staticPath)
+                setTotalpages(finalRes.pages)
             })
 
     }
 
     useEffect(() => {
         getTestimonials()
-    }, [])
+    }, [name, currentPage, limit])
 
     let checkedTestimonial = (event) => {
         if (event.target.checked && !ids.includes(event.target.value)) {
@@ -63,7 +76,7 @@ export default function View_Testimonial() {
                 <div className='border-b-2 text-gray-300'></div>
                 <div className='w-full min-h-[620px]'>
                     <div className='max-w-[1220px] mx-auto py-5'>
-                        <TableHeader module={module} linkName={linkName} ids={ids} setIds={setIds} getData={getTestimonials} />
+                        <TableHeader module={module} linkName={linkName} ids={ids} setIds={setIds} getData={getTestimonials} setSearchName={setName} searchField1={name} setLimit={setLimit} />
                         <div className='border border-slate-400 border-t-0 rounded-b-md'>
 
                             <div className='overflow-x-auto'>
@@ -72,9 +85,10 @@ export default function View_Testimonial() {
                                     <thead className='text-gray-900 text-[12px] uppercase bg-gray-50'>
                                         <tr>
                                             <th>
-                                               <SelectCheckbox ids={ids} setIds={setIds} list={testimonialList} selectAll={selectAll} setSelectAll={setSelectAll} />
-                                                                                         
+                                                <SelectCheckbox ids={ids} setIds={setIds} list={testimonialList} selectAll={selectAll} setSelectAll={setSelectAll} />
+
                                             </th>
+                                            <th scope='col' className='px-6 py-3'>SR. No</th>
                                             <th scope='col' className='px-6 py-3'>Name</th>
                                             <th scope='col' className='w-[12%]'>Image</th>
                                             <th scope='col' className='w-[15%]'>Designation</th>
@@ -94,6 +108,11 @@ export default function View_Testimonial() {
                                                     <tr className='bg-white hover:bg-gray-50'>
                                                         <th className='w-4 p-4'>
                                                             <input type='checkbox' onChange={checkedTestimonial} value={items._id} checked={ids.includes(items._id)} className='text-blue-600 text-sm rounded-sm w-4 h-4 border-gray-400 ' />
+                                                        </th>
+                                                        <th className=' py-4'>
+                                                            {
+                                                                (currentPage - 1) * limit + (index + 1)
+                                                            }
                                                         </th>
                                                         <th scope='row' className=' text-[15px] px-6 py-4'>
 
@@ -153,6 +172,12 @@ export default function View_Testimonial() {
                         </div>
                     </div>
                 </div>
+                <ResponsivePagination
+                    current={currentPage}
+                    total={totalpages}
+                    onPageChange={setCurrentPage}
+                />
+
             </section>
 
 

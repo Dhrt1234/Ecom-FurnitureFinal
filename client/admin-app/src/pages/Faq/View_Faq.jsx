@@ -6,6 +6,9 @@ import { FaPen } from "react-icons/fa";
 import TableHeader from '../../common/TableHeader';
 import { event } from 'jquery';
 import SelectCheckbox from '../../common/SelectCheckbox';
+import ResponsivePagination from 'react-responsive-pagination';
+
+
 export default function View_Faq() {
     const linkName = "View Faq";
     const module = "faq";
@@ -13,19 +16,37 @@ export default function View_Faq() {
     let apiBaseUrl = import.meta.env.VITE_APIBASEURL
     const [ids, setIds] = useState([])
     let [selectAll, setSelectAll] = useState(false)
+    let [faqQue, setFaqQue] = useState('');
+
+
+    const [currentPage, setCurrentPage] = useState(1);
+    let [totalpages, setTotalpages] = useState(0);
+    let [limit, setLimit] = useState(5);
+
+
 
     let getFaqs = () => {
-        axios.get(`${apiBaseUrl}faq/view`)
+        axios.get(`${apiBaseUrl}faq/view`, {
+
+            params: {
+
+                faqQue,
+                currentPage,
+                limit
+
+            }
+        })
             .then((res) => res.data)
             .then((finalRes) => {
                 console.log(finalRes)
                 setFaqList(finalRes.data)
+                setTotalpages(finalRes.pages)
             })
 
     }
 
     useEffect(() => {
-        getFaqs()
+        getFaqs(faqQue, currentPage, limit)
     }, [])
 
     useEffect(() => {
@@ -60,7 +81,7 @@ export default function View_Faq() {
                 <div className='border-b-2 text-gray-300'></div>
                 <div className='w-full min-h-[620px]'>
                     <div className='max-w-[1220px] mx-auto py-5'>
-                        <TableHeader module={module} linkName={linkName} ids={ids} setIds={setIds} getData={getFaqs} />
+                        <TableHeader module={module} linkName={linkName} ids={ids} setIds={setIds} getData={getFaqs} setSearchName={setFaqQue} searchField1={faqQue} setLimit={setLimit} />
                         <div className='border border-slate-400 border-t-0 rounded-b-md'>
 
                             <div className='overflow-x-auto'>
@@ -71,6 +92,7 @@ export default function View_Faq() {
                                             <th>
                                                 <SelectCheckbox ids={ids} setIds={setIds} list={faqList} selectAll={selectAll} setSelectAll={setSelectAll} />
                                             </th>
+                                            <th scope='col' className='px-6 py-3'>SR. No</th>
                                             <th scope='col' className='px-6 py-3'>Question</th>
                                             <th scope='col' className='w-12%]'>Answer</th>
                                             <th scope='col' className='w-[15%]'>Order</th>
@@ -88,6 +110,12 @@ export default function View_Faq() {
                                                         <tr className='bg-white hover:bg-gray-50'>
                                                             <th className='w-4 p-4'>
                                                                 <input type='checkbox' onChange={getAllCheckedvalue} value={items._id} checked={ids.includes(items._id)} className='text-blue-600 text-sm rounded-sm w-4 h-4 border-gray-400 ' />
+                                                            </th>
+
+                                                            <th className=' py-4'>
+                                                                {
+                                                                    (currentPage - 1) * limit + (index + 1)
+                                                                }
                                                             </th>
                                                             <th scope='row' className=' text-[15px] px-6 py-4'>
 
@@ -144,6 +172,11 @@ export default function View_Faq() {
                         </div>
                     </div>
                 </div>
+                <ResponsivePagination
+                    current={currentPage}
+                    total={totalpages}
+                    onPageChange={setCurrentPage}
+                />
             </section>
 
 

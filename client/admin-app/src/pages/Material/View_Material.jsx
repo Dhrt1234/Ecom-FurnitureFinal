@@ -18,10 +18,10 @@ export default function View_Material() {
     let [selectAll, setSelectAll] = useState(false)
     // const navigate = useNavigate();
     let [materialName, setMaterialName] = useState('')
-    let [materialOrder, SetMaterialOrder] = useState('')
+   /*  let [materialOrder, SetMaterialOrder] = useState('') */
     console.log("materialName", materialName)
-    console.log("materialOrder", materialOrder)
-
+   /*  console.log("materialOrder", materialOrder)
+ */
 
       const [currentPage, setCurrentPage] = useState(1);
         let [totalpages, setTotalpages]= useState(0);
@@ -32,7 +32,7 @@ export default function View_Material() {
         axios.get(`${apiBaseUrl}material/view`, {
             params: {
                 materialName,
-                materialOrder,
+              /*   materialOrder, */
                 currentPage,
                 limit
 
@@ -49,7 +49,7 @@ export default function View_Material() {
 
     useEffect(() => {
         getMaterials()
-    }, [materialName, materialOrder, currentPage, limit])
+    }, [materialName, currentPage, limit])
 
    
 
@@ -84,7 +84,7 @@ export default function View_Material() {
                 <div className='border-b-2 text-gray-300'></div>
                 <div className='w-full min-h-[620px]'>
                     <div className='max-w-[1220px] mx-auto py-5'>
-                        <TableHeader module={module} linkName={linkName} ids={ids} setIds={setIds} getData={getMaterials} setSearchName={setMaterialName} setSearchOrder={SetMaterialOrder} searchField1={materialName} searchField2={materialOrder} setLimit={setLimit} />
+                        <TableHeader module={module} linkName={linkName} ids={ids} setIds={setIds} getData={getMaterials} setSearchName={setMaterialName} /* setSearchOrder={SetMaterialOrder} */ searchField1={materialName} /* searchField2={materialOrder} */ setLimit={setLimit} />
                         <div className='border border-slate-400 border-t-0 rounded-b-md'>
 
                             <div className='overflow-x-auto'>
