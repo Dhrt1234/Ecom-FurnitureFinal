@@ -8,7 +8,7 @@ export default function SelectCheckbox({ ids, setIds, list, selectAll, setSelect
 
     let handleAll = (event) => {
             if (event.target.checked) {
-    
+ 
                 let allIds = list.map((items) => items._id)
                 setIds(allIds)
             }

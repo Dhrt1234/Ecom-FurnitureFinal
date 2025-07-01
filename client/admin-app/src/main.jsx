@@ -73,14 +73,16 @@ createRoot(document.getElementById('root')).render(
           <Route path='/view-Sub-category' element={<View_Sub_Category />} />
           <Route path='/update-Sub-category/:id' element={<Add_Sub_Category />} />
          
-         
+          { /*sub sub category */}
           <Route path='/add-Sub-category_2' element={<Add_Sub_Category_2 />} />
           <Route path='/view-Sub-category_2' element={<View_Sub_Category_2 />} />
             <Route path='/update-Sub-category_2/:id' element={<Add_Sub_Category_2 />} />
       
-      
+        {/* why */}
           <Route path='/add-why' element={<Add_Why />} />
           <Route path='/view-why' element={<View_why />} />
+         
+         {/* slider */}
           <Route path='/add-slider' element={<Add_Slider />} />
           <Route path='/view-slider' element={<View_Slider />} />
          
@@ -88,7 +90,8 @@ createRoot(document.getElementById('root')).render(
           <Route path='/add-country' element={<Add_Country />} />
           <Route path='/view-country' element={<View_Country />} />
           <Route path='/update-country/:id' element={<Add_Country />} />
-      
+         
+           {/* testimonials */}
           <Route path='/add-testimonials' element={<Add_Testimonial />} />
           <Route path='/view-testimonials' element={<View_Testimonial />} />
         
@@ -96,10 +99,15 @@ createRoot(document.getElementById('root')).render(
          <Route path='/add-faq/:id?' element={<Add_Faq />} /> {/*  here we can write ":id?" its meaning id is optional so for add faq page id is not there and for update id is there */}
           <Route path='/view-faq' element={<View_Faq />} />
        
+         {/* product */}
           <Route path='/add-product' element={<Add_Product />} />
           <Route path='/view-product' element={<View_Product />} />
+          <Route path='/edit-product/:id' element={<Add_Product />} />
+          
           <Route path='/order' element={<Order />} />
+         
           <Route path='/profile' element={<Profile />} />
+          
           <Route path='/company_profile' element={<Company_Profile />} />
         </Route>
 

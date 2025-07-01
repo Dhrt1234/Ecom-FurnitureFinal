@@ -7,7 +7,7 @@ let sub_subcategorySchema = new mongoose.Schema({
         unique: true,
         required: true,
         minLength: 2,
-        maxLength: 20,
+        maxLength: 50,
         lowercase: true
 
     },                                                             //68349b674839b8e8f61e41f1                 

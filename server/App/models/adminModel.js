@@ -9,6 +9,9 @@ let adminSchema= new mongoose.Schema({
        
     },
     adminPassword:String,
+    adminName: String,
+    adminPhone: Number,
+    adminImage: String
     
 })
 

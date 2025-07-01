@@ -7,30 +7,35 @@ import axios from "axios";
 import Swal from 'sweetalert2/dist/sweetalert2.js'
 import 'sweetalert2/src/sweetalert2.scss'
 
-export default function HeaderCategory({ module, linkName, ids, setIds, getData, parentCategory, subcategoryName,setParentCategory,setSubcategoryName, setLimit }) {
+export default function HeaderCategory({ module, linkName, ids, setIds, getData, parentCategory, subcategoryName, setParentCategory, setSubcategoryName, setLimit }) {
     const [filterSearch, setFilterSearch] = useState(false);
     let apiBaseUrl = import.meta.env.VITE_APIBASEURL //http://localhost:8000/admin/
-      let [parentCatList, setParentCatList] = useState([])
+    let [parentCatList, setParentCatList] = useState([])
 
     let changeStatus = () => {
         console.log(ids)
         console.log(module)
-        axios.post(`${apiBaseUrl}${module}/changeStatus`,{ ids })
-            .then((res) => res.data)
-            .then((finalRes) => {
-                if (finalRes.status) {
-                    toast.success(finalRes.msg)
-                    getData()
-                    setIds([])
+        if (ids.length >= 1) {
+            axios.post(`${apiBaseUrl}${module}/changeStatus`, { ids })
+                .then((res) => res.data)
+                .then((finalRes) => {
+                    if (finalRes.status) {
+                        toast.success(finalRes.msg)
+                        getData()
+                        setIds([])
 
-                }
-                else {
-                    toast.error(finalRes.msg)
-                }
-            })
+                    }
+                    else {
+                        toast.error(finalRes.msg)
+                    }
+                })
+        }
+        else {
+            toast.error("Please select records")
+        }
     }
 
-      let deleteData = () => {
+       let deleteData = () => {
         console.log(ids)
         console.log(module)
         if (ids.length >= 1) {
@@ -47,16 +52,26 @@ export default function HeaderCategory({ module, linkName, ids, setIds, getData,
                     axios.post(`${apiBaseUrl}${module}/multi-delete`, { ids })
                         .then((res) => res.data)
                         .then((finalRes) => {
+                            if (finalRes.status) {
+                                getData()
+                                setIds([])
+                                Swal.fire({
+                                    title: "Deleted!",
+                                    text: "Your Record has been deleted.",
+                                    icon: "success"
+                                });
 
-                            getData()
-                            setIds([])
+                            }
+                            else {
+                                Swal.fire({
+                                    icon: "error",
+                                    title: "Oops...",
+                                    text: "Record does not delete. ",
+                                });
+                            }
 
                         })
-                    Swal.fire({
-                        title: "Deleted!",
-                        text: "Your Record has been deleted.",
-                        icon: "success"
-                    });
+
                 }
             });
 
@@ -71,18 +86,18 @@ export default function HeaderCategory({ module, linkName, ids, setIds, getData,
         }
     }
 
-     let getParentcategory = () => {
+    let getParentcategory = () => {
         axios.get(`${apiBaseUrl}subcategory/parentcategory`)
             .then((res) => res.data)
             .then((finalRes) => {
                 setParentCatList(finalRes.data)
             })
     }
-    
-        useEffect(() => {
-            getParentcategory()
-        }, [])
-    
+
+    useEffect(() => {
+        getParentcategory()
+    }, [])
+
     return (
         <div>
 
@@ -90,29 +105,29 @@ export default function HeaderCategory({ module, linkName, ids, setIds, getData,
                 <div className="bg-[#F9FAFB] p-4 mb-5">
                     <form className="grid grid-cols-[40%_35%_5%] gap-[1%] items-center">
 
-                       
-                           <select name='parentCategory' className='text-[16px] border-2 py-2 px-2 block shadow-md
+
+                        <select name='parentCategory' className='text-[16px] border-2 py-2 px-2 block shadow-md
                                                  border-gray-400 w-full rounded-lg focus:border-blue-500'
-                                            onChange={(e) => setParentCategory(e.target.value)}
-                                            value={parentCategory}
-                                        >
+                            onChange={(e) => setParentCategory(e.target.value)}
+                            value={parentCategory}
+                        >
 
-                                            <option>Select Parent Category</option>
-                                            {
-                                                parentCatList.map((items, index) =>
+                            <option>Select Parent Category</option>
+                            {
+                                parentCatList.map((items, index) =>
 
-                                                    <option
-                                                        key={index} value={items._id}>
-                                                        {items.categoryName}
-                                                    </option>
-                                                )
-                                            }
-                                        </select>
+                                    <option
+                                        key={index} value={items._id}>
+                                        {items.categoryName}
+                                    </option>
+                                )
+                            }
+                        </select>
                         <input
                             type="text"
                             name="subcategoryName"
                             value={subcategoryName}
-                            onChange={(e)=> setSubcategoryName(e.target.value)}
+                            onChange={(e) => setSubcategoryName(e.target.value)}
                             placeholder="Search name"
                             className="w-[400px] text-[14px] px-4 py-3 mr-2 border border-[#00000025] rounded-[4px]"
                         />
@@ -131,11 +146,11 @@ export default function HeaderCategory({ module, linkName, ids, setIds, getData,
 
                 <h3 className='text-[26px] font-semibold'>{linkName}</h3>
                 <div className='flex justify-between gap-5'>
-                     <select onChange={(e)=>setLimit(e.target.value)} className="bg-white rounded-[8px] cursor-pointer p-3 font-semibold">
+                    <select onChange={(e) => setLimit(e.target.value)} className="bg-white rounded-[8px] cursor-pointer p-3 font-semibold">
                         <option value={2}>Change Page Limit</option>
-                          <option value={10}>10</option>
-                            <option value={12}>12</option>
-                              <option value={15}>15</option>
+                        <option value={10}>10</option>
+                        <option value={12}>12</option>
+                        <option value={15}>15</option>
                     </select>
                     <button
                         onClick={() => setFilterSearch(!filterSearch)}

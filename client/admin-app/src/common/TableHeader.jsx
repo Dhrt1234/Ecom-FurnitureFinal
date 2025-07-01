@@ -7,11 +7,11 @@ import { IoMdSearch } from "react-icons/io";
 import Swal from 'sweetalert2/dist/sweetalert2.js'
 import 'sweetalert2/src/sweetalert2.scss'
 
-export default function TableHeader({ module, linkName, ids, setIds, getData, setSearchName,searchField1,setLimit /*  , searchField2, setSearchOrder  */ }) {
+export default function TableHeader({ module, linkName, ids, setIds, getData, setSearchName, searchField1, setLimit /*  , searchField2, setSearchOrder  */ }) {
     const [filterSearch, setFilterSearch] = useState(false);
     let apiBaseUrl = import.meta.env.VITE_APIBASEURL //http://localhost:8000/admin/
 
-console.log(setSearchName)
+    console.log(setSearchName)
 
     let deleteData = () => {
         console.log(ids)
@@ -30,16 +30,26 @@ console.log(setSearchName)
                     axios.post(`${apiBaseUrl}${module}/multi-delete`, { ids })
                         .then((res) => res.data)
                         .then((finalRes) => {
+                            if (finalRes.status) {
+                                getData()
+                                setIds([])
+                                Swal.fire({
+                                    title: "Deleted!",
+                                    text: "Your Record has been deleted.",
+                                    icon: "success"
+                                });
 
-                            getData()
-                            setIds([])
+                            }
+                            else {
+                                Swal.fire({
+                                    icon: "error",
+                                    title: "Oops...",
+                                    text: "Record does not delete. ",
+                                });
+                            }
 
                         })
-                    Swal.fire({
-                        title: "Deleted!",
-                        text: "Your Record has been deleted.",
-                        icon: "success"
-                    });
+
                 }
             });
 
@@ -57,19 +67,24 @@ console.log(setSearchName)
     let changeStatus = () => {
         console.log(ids)
         console.log(module)
-        axios.post(`${apiBaseUrl}${module}/changeStatus`, { ids })
-            .then((res) => res.data)
-            .then((finalRes) => {
-                if (finalRes.status) {
-                    toast.success(finalRes.msg)
-                    getData()
-                    setIds([])
+        if (ids.length >= 1) {
+            axios.post(`${apiBaseUrl}${module}/changeStatus`, { ids })
+                .then((res) => res.data)
+                .then((finalRes) => {
+                    if (finalRes.status) {
+                        toast.success(finalRes.msg)
+                        getData()
+                        setIds([])
 
-                }
-                else {
-                    toast.error(finalRes.msg)
-                }
-            })
+                    }
+                    else {
+                        toast.error(finalRes.msg)
+                    }
+                })
+        }
+        else {
+            toast.error("Please select records")
+        }
     }
 
     return (
@@ -79,13 +94,13 @@ console.log(setSearchName)
                 <div className=" bg-[#F9FAFB] p-4 mb-5">
                     <form className="flex gap-2">
                         <input
-                           
+
                             type="text"
                             placeholder="Search by name"
                             className="w-[400px] bg-white text-[14px] px-4 py-3 mr-2 border border-[#00000025] rounded-[4px]"
-                            value={searchField1} onChange={(e)=>setSearchName(e.target.value)}
+                            value={searchField1} onChange={(e) => setSearchName(e.target.value)}
                         />
-                      {/*    <input
+                        {/*    <input
                             
                             type="text"
                             placeholder="Search by order"
@@ -108,13 +123,13 @@ console.log(setSearchName)
                 <h3 className='text-[26px] font-semibold'>{linkName} {setIds} </h3>
                 <div className='flex justify-between gap-5'>
 
-                    <select onChange={(e)=>setLimit(e.target.value)} className="bg-white rounded-[8px] cursor-pointer p-3 font-semibold">
+                    <select onChange={(e) => setLimit(e.target.value)} className="bg-white rounded-[8px] cursor-pointer p-3 font-semibold">
                         <option value={5}>Change Page Limit</option>
-                          <option value={10}>10</option>
-                            <option value={12}>12</option>
-                              <option value={15}>15</option>
+                        <option value={10}>10</option>
+                        <option value={12}>12</option>
+                        <option value={15}>15</option>
                     </select>
-                 
+
                     <button
                         onClick={() => setFilterSearch(!filterSearch)}
                         className="bg-[#1D4ED8] hover:bg-[#1d33d8] text-white p-3 mr-3 rounded-[8px] cursor-pointer"

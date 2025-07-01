@@ -1,5 +1,7 @@
-const { transporter } = require("../../config/mailConfig");
-/* const { adminModel} = require("../../model/adminModel") */
+const { transporter } = require("../../Config/mailConfig")
+const { adminModel } = require("../../models/adminModel");
+let fs = require("fs");
+
 let myOTP = new Map()// OTP store Backend .. -Map is class which store any value in variable not store in DB.
 
 
@@ -26,15 +28,17 @@ let adminLogin = async (req, res) => {
 
 let adminData = async (req, res) => {
 
-     let { adminID } = req.params
+    let { adminID } = req.params
+    console.log("admin Id", adminID)
     try {
 
-        let data = await adminModel.findOne(adminID);
+        let data = await adminModel.findOne({ _id: adminID });
         let obj;
         obj = {
 
             status: 1,
             msg: "admin details view",
+            staticPath: process.env.ADMINIMAGEPATH,
             data
         }
         res.send(obj)
@@ -51,6 +55,75 @@ let adminData = async (req, res) => {
     }
 }
 
+let adminUpdate = async (req, res) => {
+    let { adminID } = req.params
+
+    let { adminName, adminEmail, adminPhone } = req.body
+    console.log(adminID, adminName, adminEmail, adminPhone);
+
+    let adminData = {
+        adminName,
+        adminEmail,
+        adminPhone
+
+    }
+
+    if (req.file) {
+        if (req.file.filename) {
+            adminData['adminImage'] = req.file.filename
+        }
+    }
+    try {
+        let adminView = await adminModel.find({ _id: adminID });
+
+
+
+       
+        for (let v of adminView) {
+            if ((v.adminEmail === adminEmail) || (v.adminPhone === adminPhone)) {
+                 console.log(v.adminEmail, v.adminPhone);
+                obj = {
+                    status: 0,
+                    msg: "email and phone no can't be update.",
+
+                }
+                res.send(obj)
+            }
+            else {
+                if (v.adminImage) {
+                    console.log("admin image", v.adminImage);
+
+                    let deletePath = "uploads/admin/" + v.adminImage
+                    fs.unlinkSync(deletePath)
+
+                }
+
+                else {
+                    console.log("no image");
+                }
+                let data = await adminModel.updateOne({ _id: adminID }, { $set: adminData })
+                obj = {
+                    status: 1,
+                    msg: "Your Profile is Updated Successfully!!",
+                    data
+                }
+                res.send(obj)
+
+            }
+
+
+        }
+
+    }
+
+    catch (error) {
+        obj = {
+            status: 0,
+            msg: "Enter Valid Records."
+        }
+        res.send(obj)
+    }
+}
 
 
 let forgotSendOTP = async (req, res) => {
@@ -124,4 +197,4 @@ let changePassword = async (req, res) => {
     }
 }
 
-module.exports = { adminLogin, adminData, resetPassword, verifyOTP, forgotSendOTP, changePassword }
+module.exports = { adminLogin, adminData, resetPassword, verifyOTP, forgotSendOTP, changePassword, adminUpdate }
