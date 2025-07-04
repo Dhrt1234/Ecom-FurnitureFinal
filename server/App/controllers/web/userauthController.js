@@ -212,6 +212,8 @@ let resObj={
 }
 res.send(resObj);
 }
+
+
 let userUpdate = async (req, res) => {
   
 

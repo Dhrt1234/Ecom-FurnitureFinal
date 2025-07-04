@@ -5,7 +5,7 @@ let addToCart = async (req, res) => {
     let checkproduct = await cartModel.findOne({ productId: id, color, userId })
 
     let resObj;
-    console.log("checkproduct",checkproduct);
+    console.log("checkproduct", checkproduct);
 
     if (checkproduct) {
 
@@ -37,14 +37,36 @@ let addToCart = async (req, res) => {
     console.log("resObj", resObj);
 }
 
-let userGetCart= async(req,res)=>{
-let {userId}=req.body;
-let data=await cartModel.find({userId:userId})
-let resObj={
-    status:1,
-    data
-}
-res.send(resObj);
+let userGetCart = async (req, res) => {
+    let { userId } = req.body;
+    let cartData = await cartModel.find({ userId })
+    .populate("color", "colorName")
+   
+    let resObj = {
+        status: 1,
+        cartData,
+        staticPath: process.env.PRODUCTIMAGEPATH,
+    }
+    console.log("cartData",cartData);
+    res.send(resObj);
 }
 
-module.exports = { addToCart, userGetCart }
+let deleteCart = async (req, res) => {
+
+    let cartId = req.params.cartId;
+
+    console.log("cartId", cartId);
+
+    let cart = await cartModel.deleteOne({_id:cartId})
+
+    let obj = {
+
+        status: 1,
+        msg: "Item deleted from cart!",
+        cart
+    }
+
+    res.send(obj);
+}
+
+module.exports = {deleteCart, addToCart, userGetCart }
