@@ -4,12 +4,12 @@ let addToCart = async (req, res) => {
     let { color, id, image, price, qty, title, userId } = req.body;
     let checkproduct = await cartModel.findOne({ productId: id, color, userId })
 
-    let resObj;
+    let data;
     console.log("checkproduct", checkproduct);
 
     if (checkproduct) {
 
-        resObj = {
+        data = {
             status: 0,
             msg: "Item already into cart!!"
         }
@@ -27,14 +27,15 @@ let addToCart = async (req, res) => {
         }
 
         let cart = await cartModel.insertOne(obj);
-        resObj = {
+        data = {
             status: 1,
             msg: "Item added into cart!!"
         }
-        res.send(resObj);
+       
     }
+     res.send(data);
 
-    console.log("resObj", resObj);
+    console.log("data", data);
 }
 
 let userGetCart = async (req, res) => {

@@ -23,6 +23,16 @@ categorySchema.pre('save', function (next){
     next();
 }); 
 
+// Virtual field to get all subcategories
+categorySchema.virtual('subcategories', {
+    ref: 'subcategory',
+    localField: '_id',
+    foreignField: 'parentCategory'
+});
+
+
+categorySchema.set('toJSON', { virtuals: true });
+
 let categoryModel=mongoose.model("category",categorySchema)
 console.log(categoryModel)
 module.exports={categoryModel}

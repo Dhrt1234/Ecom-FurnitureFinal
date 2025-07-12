@@ -1,3 +1,4 @@
+const { categoryModel } = require("../../models/categoryModel");
 const { faqModel } = require("../../models/faqModel");
 const { productModel } = require("../../models/productModel");
 const { sliderModel } = require("../../models/sliderModel");
@@ -226,5 +227,26 @@ let getTestimonials = async (req, res) => {
         console.log("error", obj)
     }
 }
+let megaMenu = async (req, res) => {
+   /*  let categoryData = await categoryModel.find({}, 'categoryName slug')
+        .populate({
+            path: 'subcategories',
+            select:'subcategoryName slug',
+            populate: { path: 'sub_subcategories', select: 'sub_subcatName slug'}
+        }); */
 
-module.exports = { getTestimonials, getFaq, getTopRatedProduct, getUpSellingProduct, getsingleProduct, getBestSellingProduct, sliderData, getproductBtType }
+          let categoryData = await categoryModel.find().select(['categoryName','slug'])
+        .populate({
+            path: 'subcategories',
+            select:(["subcategoryName"]),
+            populate: { path: 'sub_subcategories' , select:(["sub_subcatName","slug"]) }
+        });
+    let resObj = {
+        status: 1,
+        categoryData
+    }
+console.log("megamenu response",resObj);
+    res.send(resObj)
+}
+
+module.exports = { megaMenu, getTestimonials, getFaq, getTopRatedProduct, getUpSellingProduct, getsingleProduct, getBestSellingProduct, sliderData, getproductBtType }
